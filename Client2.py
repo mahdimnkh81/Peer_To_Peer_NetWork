@@ -6,17 +6,14 @@ import threading
 import time
 import numpy as np
 from PIL import Image
-import redis
 from numpy import array
+import redis
 import select
 
-
 id = str(datetime.datetime.now())
-# id = "qq"
-PORT = 9191
+PORT = 4521
 hostname = socket.gethostname()
 ip_address = socket.gethostbyname(hostname)
-
 
 redis_host = 'localhost'
 redis_port = 6379
@@ -82,30 +79,30 @@ def post_chose_client(id):
     print("ipAddress" + "__>" + show_list_info[0])
     print("port" + "__>" + show_list_info[1])
     print("hostname" + "__>" + show_list_info[2])
-    conn.close()
     connect_to_client(show_list_info[2], show_list_info[1], show_list_info[0])
+    conn.close()
 
 
-def get_info_client():
-    conn = http.client.HTTPConnection(host='127.0.0.1', port=8031)
-
-    while 1:
-        conn.request("GET", "http://localhost:8031/listOfclients")
-        rsp = conn.getresponse()
-        list_ids = list(rsp.headers.values())[2]
-        x = str(list_ids)
-        y = ""
-        for i in x:
-            if i != '[' and i != ']' and i != ',' and i != '"':
-                y += i
-        show_list_ids = y.split(" ")
-        print(rsp.reason)
-        for i in range(0, len(show_list_ids)):
-            print(str(i) + "__>" + show_list_ids[i])
-        name_of_client = input()
-        post_chose_client(name_of_client)
-        conn.close()
-        break
+# def get_info_client():
+#     conn = http.client.HTTPConnection(host='127.0.0.1', port=8031)
+#
+#     while 1:
+#         conn.request("GET", "http://localhost:8031/listOfclients")
+#         rsp = conn.getresponse()
+#         list_ids = list(rsp.headers.values())[2]
+#         x = str(list_ids)
+#         y = ""
+#         for i in x:
+#             if i != '[' and i != ']' and i != ',' and i != '"':
+#                 y += i
+#         show_list_ids = y.split(" ")
+#         print(rsp.reason)
+#         for i in range(0, len(show_list_ids)):
+#             print(str(i) + "__>" + show_list_ids[i])
+#         name_of_client = input()
+#         conn.close()
+#         post_chose_client(name_of_client)
+#         break
 
 
 def connect_to_client(hostname, port, ipaddress):
@@ -125,7 +122,6 @@ def connect_to_client(hostname, port, ipaddress):
 
 
 def server_TCP_text():
-
     def handle_client(client_socket):
         with client_socket as sock:
             time.sleep(10)
@@ -135,11 +131,11 @@ def server_TCP_text():
             sock.close()
 
     host = socket.gethostname()
-    # port = 5000
+    port = 5000
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server.bind((host, PORT))
+    server.bind((host, port))
     server.listen(2)
-    print(f'[*] Listening on {host}:{PORT}')
+    print(f'[*] Listening on {host}:{port}')
 
     while True:
         client, address = server.accept()
@@ -192,7 +188,6 @@ def server_UDP_image():
         UDPServerSocket.close()
 
 
-
 def client_TCP_text(hostname, port, ipaddress):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect((hostname, int(port)))
@@ -212,6 +207,8 @@ def client_TCP_text(hostname, port, ipaddress):
             s.send(text.encode("utf-8"))
 
     s.close()
+
+
 def client_UDP_image(hostname, port, ipaddress):
     msgFromClient = input("Enter image")
     bytesToSend = str.encode(msgFromClient)
@@ -233,11 +230,11 @@ def client_UDP_image(hostname, port, ipaddress):
 
 
 if __name__ == '__main__':
-    # server_UDP_image()
+    # client_UDP_image()
     post_information()
     get_listOfClients()
 
-    while 1:
-        cmd = input('input command (ex. exit): ')
-        if cmd == 'exit':
-            exit(0)
+while 1:
+    cmd = input('input command (ex. exit): ')
+    if cmd == 'exit':
+        exit(0)
